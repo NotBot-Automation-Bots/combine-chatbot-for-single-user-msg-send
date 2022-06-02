@@ -137,8 +137,8 @@ def index():
 '''
 
 
-@app.route('/fiidaa_art_handle', methods=['POST'])
-def fiidaa_art_handleWebhook():
+@app.route('/handle', methods=['POST'])
+def handleWebhook():
     try:
 
         print("request for webhhok")
@@ -159,7 +159,9 @@ def fiidaa_art_handleWebhook():
                 sender = msg['author']
                 sender = sender[:-5]
                 group_obj = groups.find_one({'user_contact' : str(sender) , 'chatbot' : 1})
-
+                print(group_obj)
+                print(group_obj)
+                print(group_obj)
 #################################### End for fiidata chatbot ###########################
                 
                 if group_obj is not None and (str(group_obj['customer']) == str(sender),group_obj['user_contact_status'] == "fiidata_chatbot"+str(sender), group_obj['chat_bot_type'] == "fiidata_chatbot_data"):
