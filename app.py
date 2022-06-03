@@ -98,7 +98,7 @@ home_bot_msgs = [home_bot_msg2, home_bot_msg3, home_bot_msg4, home_bot_msg5]
 
 
 
-hdb_bot_msg1 = "Book an appointment now to find out how much you can make selling your HDB property! \n 1) Yes! Book an appointment \n 2) Tell me more please"
+hdb_bot_msg1 = "Hi {} \n\nBook an appointment now to find out how much you can make selling your HDB property! \n 1) Yes! Book an appointment \n 2) Tell me more please"
 
 
 hdb_bot_msg2 = "Nick and Rina are committed to selling your homes and saving you up to $8k or more! They have more than 15 years experience in the SG property market!  \n 1) Yes! Book an appointment \n 2) No thank you"
@@ -144,10 +144,12 @@ def handleWebhook():
         print("request for webhhok")
 
         data = request.json
+        print(data)
         if "messages" in data.keys():
-
+            print("Enter into the message")
             for msg in data['messages']:
-
+                print("All resposnce data")
+                print(msg)
                 # if(msg['fromMe']):
                 #     return "my msg"
                 msg_text = (msg['body'])
@@ -158,13 +160,17 @@ def handleWebhook():
                 chatid = msg['chatId']
                 sender = msg['author']
                 sender = sender[:-5]
-                group_obj = groups.find_one({'user_contact' : str(sender) , 'chatbot' : 1})
-                print(group_obj)
-                print(group_obj)
-                print(group_obj)
+                print(sender)
+                group_obj = groups.find_one({'user_contact' : sender , 'chatbot' : 1,"chatbot_type_for_chatbot":"chatbot_four_bot"+str(sender)})
+                print("Filter main user data")
+                print(group_obj['user_contact_status'])
+                print("Finel data")
 #################################### End for fiidata chatbot ###########################
                 
                 if group_obj is not None and (str(group_obj['customer']) == str(sender),group_obj['user_contact_status'] == "fiidata_chatbot"+str(sender), group_obj['chat_bot_type'] == "fiidata_chatbot_data"):
+                    print("Enter into first chatbot ")
+                    print("Enter into first chatbot ")
+                    print("Enter into first chatbot ")
                     filter = {'_id' : group_obj['_id']}
                     msg_number = group_obj['msg_sent']
                     newvalues = { "$set": { 'msg_sent': msg_number +1 } }
@@ -743,7 +749,8 @@ def handleWebhook():
         print(e)
         return str(e)
     
-
+from waapis import send_msg
+# @app.route('/sendmsg')
 @app.route('/sendmsg', methods=['POST'])
 def fiidaa_art_create_group():
     request_data = request.get_json()
@@ -758,12 +765,13 @@ def fiidaa_art_create_group():
             # request_data = request.get_json()
             if ('customer' in request_data) :
                 customer = request_data["customer"]
-                # chatbot_status = request.json['bot_status']
-                chatbot_status = request_data['bot_status']
+                chatbot_status = request.json['bot_status']
+                # chatbot_status = request_data['bot_status']
                 group_name = request_data["customer"]
                 grps = groups.find_one({
                     'phone_list': [customer],
                     "user_contact" : customer,
+                    "chatbot_type_for_chatbot" : "chatbot_four_bot"+str(customer),
                     "user_contact_status" : "fiidata_chatbot"+str(customer),
                     "chat_bot_type" : "fiidata_chatbot_data",
                     })
@@ -783,13 +791,17 @@ def fiidaa_art_create_group():
                         "customer": customer,
                         'phone_list' : customer,
                         "user_contact" : customer,
+                        "chatbot_type_for_chatbot" : "chatbot_four_bot"+str(customer),
+                        "msg_sent_date_time" : datetime.datetime.now(),
+                        "flow_step" : 0,
                         "user_contact_status" : "fiidata_chatbot"+str(customer),
                         "chatbot" : chatbot_status,
                         "msg_sent": 0,
                         "chat_bot_type" : "fiidata_chatbot_data",
+
                         }
                     groups.insert_one(newGroup)  
-                    
+                    print(groups)
                     return '0'              
                 else :
                     return "Message already send "
@@ -820,6 +832,8 @@ def fiidaa_art_create_group():
                     "user_contact" : customer,
                     "user_contact_status" : "property_bot_for_tenants_chatbot"+str(customer),
                     "chat_bot_type" : "property_bot_for_tenants_chatbot_data",
+                    "chatbot_type_for_chatbot" : "chatbot_four_bot"+str(customer),
+
                     })
                 if(grps is None):
                     url = f"{mysec.API_URL}sendMessage?token={mysec.TOKEN}"
@@ -841,6 +855,9 @@ def fiidaa_art_create_group():
                         "chatbot" : chatbot_status,
                         "msg_sent": 0,
                         "chat_bot_type" : "property_bot_for_tenants_chatbot_data",
+                        "chatbot_type_for_chatbot" : "chatbot_four_bot"+str(customer),
+                        "msg_sent_date_time" : datetime.datetime.now(),
+                        "flow_step" : 0,
                         }
                     groups.insert_one(newGroup)  
                     
@@ -874,6 +891,7 @@ def fiidaa_art_create_group():
                     "user_contact" : customer,
                     "user_contact_status" : "home_bot_chatbot"+str(customer),
                     "chat_bot_type" : "home_bot_chatbot_data",
+                    "chatbot_type_for_chatbot" : "chatbot_four_bot"+str(customer),
                     })
                 if(grps is None):
                     url = f"{mysec.API_URL}sendMessage?token={mysec.TOKEN}"
@@ -893,6 +911,9 @@ def fiidaa_art_create_group():
                         "chatbot" : chatbot_status,
                         "msg_sent": 0,
                         "chat_bot_type" : "home_bot_chatbot_data",
+                        "chatbot_type_for_chatbot" : "chatbot_four_bot"+str(customer),
+                        "msg_sent_date_time" : datetime.datetime.now(),
+                        "flow_step" : 0,
                         }
                     groups.insert_one(newGroup)  
                     
@@ -925,6 +946,7 @@ def fiidaa_art_create_group():
                     "user_contact" : customer,
                     "user_contact_status" : "hdb_bot_chatbot"+str(customer),
                     "chat_bot_type" : "hdb_bot_chatbot_data",
+                    "chatbot_type_for_chatbot" : "chatbot_four_bot"+str(customer),
                     })
                 if(grps is None):
                     url = f"{mysec.API_URL}sendMessage?token={mysec.TOKEN}"
@@ -934,8 +956,6 @@ def fiidaa_art_create_group():
                         "phone": customer
                     }
                     resp = requests.post(url=url, headers=headers, data=json.dumps(data))
-                    
-
 
                     newGroup = {
                         # 'owner': owner,
@@ -946,6 +966,9 @@ def fiidaa_art_create_group():
                         "chatbot" : chatbot_status,
                         "msg_sent": 0,
                         "chat_bot_type" : "hdb_bot_chatbot_data",
+                        "chatbot_type_for_chatbot" : "chatbot_four_bot"+str(customer),
+                        "msg_sent_date_time" : datetime.datetime.now(),
+                        "flow_step" : 0,
                         }
                     groups.insert_one(newGroup)  
                     
@@ -961,6 +984,75 @@ def fiidaa_art_create_group():
 
 #################################### End for hdb_bot chatbot ###########################
 
+
+
+
+#################################### Start Fifth Chat with grp #########################
+
+    # elif request.json['bot_status']
+    #     if request_data:
+    #         request_data = request.get_json()
+    #         if ('owner' in request_data and 'customer' in request_data) and 'group_name' in request_data:
+    #             owner = request_data["owner"].replace(",","").split()
+    #             customer = request_data["customer"]
+    #             # chatbot_status = request_data['bot_status']
+    #             chatbot_status = request.json['bot_status']
+    #             phone_list = owner.append(customer)
+    #             phone_lst = owner
+    #             # phone_lst.sort()
+
+    #             group_name = request_data["group_name"]
+                
+    #             grps = groups.find_one({
+    #                 'phone_list': [phone_lst],
+    #                 'groupname' : group_name
+    #                 })
+
+
+    #             if(grps is None):
+    #                 a = create_group_chatapi(phone_lst, group_name, msg1)
+    #                 data = a.json()
+    #                 newGroup = {
+    #                     'owner': owner,
+    #                     "customer": customer,
+    #                     'phone_list' : phone_lst,
+    #                     'groupname': group_name,
+    #                     'chatId' : data['chatId'],
+    #                     "chatbot" : chatbot_status,
+    #                     "msg_sent": 0,
+    #                     "msg_sent_date_time" : datetime.datetime.now(),
+    #                     "flow_step" : 0,
+    #                     }
+    #                 groups.insert_one(newGroup)  
+                    
+    #                 return data              
+                
+
+    #             else :
+    #                 print(grps['chatId'])
+    #                 filter = {'_id' : grps['_id']}
+    #                 newvalues = { "$set": { 'msg_sent': 0 } }
+    #                 groups.update_one(filter, newvalues)
+    #                 if(grps['chatId'] is not None):
+    #                     chatId = grps['chatId']
+    #                 else:
+    #                     chatId = getGroupChatID(group_name)
+                    
+    #                 url = f"{mysec.API_URL}sendMessage?token={mysec.TOKEN}"
+    #                 headers = {'Content-type': 'application/json'}
+    #                 data = {
+    #                     "body": msg1,
+    #                     "chatId": chatId
+    #                 }
+    #                 resp = requests.post(url=url, headers=headers, data=json.dumps(data))
+    #                 return resp.text
+    #         else:
+    #             return {"message": "Failed", "details": "phone number or group name is missing"}
+            
+    #     else:
+    #         return {"message": "Failed", "details": "request body missing"}
+
+################################### End for fifth chatbot ###############
 
 if __name__ == '__main__':
     app.run()
@@ -991,7 +1083,16 @@ if __name__ == '__main__':
 #     "chatbot_type" : "home_bot_chatbot"
 # }
 
-# third_chatbot = {
+# fourth_chatbot = {
+#     "customer" : "918815312085",
+#     "msg" : "Arun Ahirwar",
+#     "bot_status" : 1,
+#     "chatbot_type" : "hdb_bot_chatbot"
+# }
+
+
+
+# fifth_chatbot = {
 #     "customer" : "918815312085",
 #     "msg" : "Arun Ahirwar",
 #     "bot_status" : 1,

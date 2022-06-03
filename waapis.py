@@ -4,7 +4,7 @@ import requests
 import mysec
 
 API_URL = mysec.API_URL
-
+API_TOKEN = mysec.TOKEN
 
 
 
@@ -28,19 +28,21 @@ def create_group_chatapi(phone_list, group_name, msg_txt):
     print(resp.text)
     return resp
 
-def send_msg(chatid, body):
+def send_msg():
     
-    chatid = request.josn['chatid']
-    body = request.json['body']
+    # chatid = request.josn['chatid']
+    # body = request.json['body']
 
-    url = f"{mysec.API_URL}sendMessage?token={mysec.API_TOKEN}"
+    url = f"{mysec.API_URL}sendMessage?token={mysec.TOKEN}"
     headers = {'Content-type': 'application/json'}
     data = {
-        "body": body,
-        "chatId": chatid
+        "body": "bodyn arun",
+        "phone": "918815312085"
     }
     print(data)
     resp = requests.post(url=url, headers=headers, data=json.dumps(data))
+    print(resp)
+    print(resp.text)
     return resp.text
 
 if __name__ == '__main__':
